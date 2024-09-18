@@ -2,9 +2,11 @@ const fs = require('fs');
 const path = require('path');
 const csv = require('csv-parser');
 const { Parser } = require('json2csv');
+const speedcsv = require('fast-csv');
 
 const OPEN_MIC_RAW_CSV_PATH = '../../data/wa_open_mic_data.csv';
 const OPEN_MIC_CLEAN_PATH = '../../data/clean_open_mic_data.csv';
+const OPEN_MIC_JSON = '../../data/open_mic.json';
 
 const GEOAPIFY_QUERY_URL = 'https://api.geoapify.com/v1/geocode/search?text=';
 const GEOAPIFY_API_KEY = 'XXXXX';
@@ -12,6 +14,7 @@ const GEOAPIFY_API_KEY = 'XXXXX';
 // Paths for input/output files
 const inputFilePath = path.join(__dirname, OPEN_MIC_RAW_CSV_PATH);  // Input CSV file
 const outputFilePath = path.join(__dirname, OPEN_MIC_CLEAN_PATH); // Output CSV file with new headers
+const outputJSONFilePath = path.join(__dirname, OPEN_MIC_JSON); // Output CSV file with new headers
 
 // Mapping header names
 const headerMapping = {
@@ -143,4 +146,17 @@ async function dataProcessing() {
     }
 }
 
-dataProcessing();
+function csvToJson() {
+    const rows = [];
+
+    fs.createReadStream(outputFilePath)
+    .pipe(speedcsv.parse({ headers: true }))
+    .on('data', row => rows.push(row))
+    .on('end', () => {
+        fs.writeFileSync(outputJSONFilePath, JSON.stringify(rows, null, 2));
+        console.log('CSV converted to JSON');
+    });
+}
+
+// dataProcessing();
+csvToJson();

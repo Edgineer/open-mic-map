@@ -31,6 +31,7 @@
 	"type": "module",
 	"dependencies": {
 		"csv-parser": "^3.0.0",
+		"fast-csv": "^5.0.1",
 		"json2csv": "^6.0.0-alpha.2",
 		"leaflet": "^1.9.4",
 		"papaparse": "^5.4.1"
